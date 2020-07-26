@@ -2,15 +2,15 @@
   <header>
     <div class="container header_container">
       <div class="logo">
-        <a href="/">Gamespot</a>
+        <router-link to="/">Gamespot</router-link>
       </div>
       <div class="login">
-        <a href="/signin">
+        <router-link to="/signin">
           <img
             :src="require('../../assets/images/login.png')"
             alt="login icon"
           />
-        </a>
+        </router-link>
       </div>
     </div>
   </header>
