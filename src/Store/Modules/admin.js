@@ -1,4 +1,5 @@
-import Vue from 'vue';
+import Vue from "vue";
+import router from "../../routes";
 
 const API_KEY = process.env.VUE_APP_API_KEY;
 const firebaseAuth = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`;
@@ -10,18 +11,38 @@ const admin = {
     refresh: null,
     authFailed: false,
   },
-  getters: {},
+  getters: {
+    isAuth(state) {
+      if (state.token) {
+        return true;
+      }
+      return false;
+    },
+  },
   mutations: {
     authUser(state, authData) {
       state.token = authData.idToken;
       state.refresh = authData.refreshToken;
+
+      if (authData.type === "signin") {
+        router.push("/dashboard");
+      }
     },
     authFailed(state, type) {
-      if (type === 'reset') {
+      if (type === "reset") {
         state.authFailed = false;
       } else {
         state.authFailed = true;
       }
+    },
+    logoutUser(state) {
+      state.token = null;
+      state.refresh = null;
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("refresh");
+
+      router.push("/");
     },
   },
   actions: {
@@ -33,15 +54,15 @@ const admin = {
         })
         .then((response) => response.json())
         .then((authData) => {
-          commit('authUser', {
+          commit("authUser", {
             ...authData,
-            type: 'signin',
+            type: "signin",
           });
-          localStorage.setItem('token', authData.idToken);
-          localStorage.setItem('refresh', authData.refreshToken);
+          localStorage.setItem("token", authData.idToken);
+          localStorage.setItem("refresh", authData.refreshToken);
         })
         .catch(() => {
-          commit('authFailed');
+          commit("authFailed");
         });
     },
   },
